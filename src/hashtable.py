@@ -51,8 +51,22 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        pos = self._hash(key) % self.capacity
+        if self.storage[pos] != None:
+            node = self.storage[pos]
+            while node:
+                if node.key == key:
+                    node.value = value
+                    break
+                elif node.next == None:
+                    node.next = LinkedPair(key, value)
+                    break
+                else:
+                    node = node.next
 
+        else:
+            self.storage[pos] = LinkedPair(key, value)
+        
 
 
     def remove(self, key):
@@ -63,7 +77,26 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        pos = self._hash(key) % self.capacity
+        check = self.storage[pos]
+        if self.storage[pos] == None:
+            return('Key not found')
+        if check.next == None:
+            if check.key == key:
+                check.value = None
+                return
+            else:
+                return('Key not found')
+ 
+        while check:
+            if check.key == key:
+                check.value = None
+                break
+            
+            check = check.next
+        return('Key not found')
+
+
 
 
     def retrieve(self, key):
@@ -74,7 +107,17 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        pos = self._hash(key) % self.capacity
+        check = self.storage[pos]
+        
+        res = None
+        while check != None:
+            if check.key == key:
+                res = check.value
+                return(res)
+            else:
+                check = check.next
+        return('Key not found')
 
 
     def resize(self):
@@ -84,12 +127,37 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        self.capacity *= 2
+        new_storage = [None] * self.capacity
+
+        for i in self.storage:
+            if i != None:
+                check = i
+                
+                while check:
+                    key = check.key
+                    value = check.value
+                    pos = self._hash(key) % self.capacity
+                    node = new_storage[pos]
+                    if node != None:
+                        while node:
+                            if node.next != None:
+                                node = node.next
+                            else:
+                                node.next = LinkedPair(key, value)
+                                node = None
+                    else:
+                        new_storage[pos] = LinkedPair(key, value)
+
+                    check = check.next
+
+        self.storage = new_storage
 
 
 
 if __name__ == "__main__":
     ht = HashTable(2)
+    ht.insert('this', 'uaua')
 
     ht.insert("line_1", "Tiny hash table")
     ht.insert("line_2", "Filled beyond capacity")
